@@ -1,8 +1,16 @@
-import { GetStaticProps, NextPage } from "next";
-import { useEffect, useState } from "react";
+import { InferGetStaticPropsType, NextPage } from "next";
 import BlogCard from "../components/BlogCard";
 
-interface Props {}
+interface PostApiResponse {
+  postInfo: {
+    map(arg0: (post: any) => JSX.Element): import("react").ReactNode;
+    title: string;
+    slug: string;
+    meta: string;
+  };
+}
+
+type Props = InferGetStaticPropsType<typeof getStaticProps>;
 
 const Blogs: NextPage<Props> = ({ posts }) => {
   return (
@@ -14,13 +22,13 @@ const Blogs: NextPage<Props> = ({ posts }) => {
   );
 };
 
-export const getStaticProps: GetStaticProps = async () => {
-  const res = await fetch("http://localhost:3000/api/posts").then((data) =>
-    data.json()
-  );
+export const getStaticProps = async () => {
+  const { postInfo }: PostApiResponse = await fetch(
+    "http://localhost:3000/api/posts"
+  ).then((data) => data.json());
 
   return {
-    props: { posts: res.postInfo },
+    props: { posts: postInfo },
   };
 };
 
